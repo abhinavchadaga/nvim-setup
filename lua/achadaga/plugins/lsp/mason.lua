@@ -21,23 +21,27 @@ return {
 
     mason_lspconfig.setup({
       ensure_installed = {
-        "tsserver",
+        "lua_ls",
         "clangd",
-        "lua_ls"
+        "cmake",
+        "pyright",
       },
     })
 
     mason_tool_installer.setup({
       ensure_installed = {
+        -- js/ts
+        "eslint_d",
         "prettier",
+        -- lua
         "stylua",
+        -- python
         "isort",
         "black",
         "pylint",
-        "eslint_d",
-        "clang-tidy"
+        -- cpp
+        "clang-format",
       },
     })
   end,
 }
-
