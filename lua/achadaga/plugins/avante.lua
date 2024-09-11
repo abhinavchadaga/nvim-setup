@@ -16,7 +16,6 @@ return {
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
     "nvim-tree/nvim-web-devicons",
-    "zbirenbaum/copilot.lua",
     {
       "HakonHarnes/img-clip.nvim",
       event = "VeryLazy",
