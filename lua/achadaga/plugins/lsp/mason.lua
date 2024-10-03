@@ -22,7 +22,8 @@ return {
     mason_lspconfig.setup({
       ensure_installed = {
         "lua_ls",
-        "clangd",
+        -- not available on arm64 linux
+        -- "clangd",
         "cmake",
         "pyright",
         "bashls",
@@ -44,7 +45,7 @@ return {
         "clang-format",
         -- bash, zsh
         "shfmt",
-        "shellcheck"
+        "shellcheck",
       },
     })
   end,

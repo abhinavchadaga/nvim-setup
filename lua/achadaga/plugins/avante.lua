@@ -3,13 +3,7 @@ return {
   event = "VeryLazy",
   lazy = false,
   version = false, -- set this if you want to always pull the latest change
-  opts = {
-    -- add any opts here
-    provider = "claude",
-    claude = {
-      api_key_name = "cmd:cat ../../../claude_api_key.env"
-    },
-  },
+  opts = {},
   build = "make",
   dependencies = {
     "stevearc/dressing.nvim",
@@ -31,7 +25,7 @@ return {
       },
     },
     {
-      'MeanderingProgrammer/render-markdown.nvim',
+      "MeanderingProgrammer/render-markdown.nvim",
       opts = {
         file_types = { "markdown", "Avante" },
       },
