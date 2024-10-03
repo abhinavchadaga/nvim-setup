@@ -25,6 +25,7 @@ return {
         "clangd",
         "cmake",
         "pyright",
+        "bashls",
       },
     })
 
@@ -41,6 +42,9 @@ return {
         "pylint",
         -- cpp
         "clang-format",
+        -- bash, zsh
+        "shfmt",
+        "shellcheck"
       },
     })
   end,

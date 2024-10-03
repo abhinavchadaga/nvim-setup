@@ -15,7 +15,11 @@ return {
         yaml = { "prettier" },
         markdown = { "prettier" },
         lua = { "stylua" },
-        cpp = { "clangformat" },
+        c = { "clang-format" },
+        cpp = { "clang-format" },
+        bash = { "shfmt" },
+        zsh = { "shfmt" },
+        python = { "black" },
       },
     })
 
