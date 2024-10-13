@@ -33,19 +33,23 @@ opt.signcolumn = "yes"
 opt.backspace = "indent,eol,start"
 
 -- clipboard
-opt.clipboard = ""
-vim.g.clipboard = {
-  name = "pbcopy",
-  copy = {
-    ["+"] = "pbcopy",
-    ["*"] = "pbcopy",
-  },
-  paste = {
-    ["+"] = "pbpaste",
-    ["*"] = "pbpaste",
-  },
-  cache_enabled = 0,
-}
+local kernel_name = vim.fn.system("uname -s"):lower()
+if string.find(kernel_name, "orbstack") then
+  vim.g.clipboard = {
+    name = "pbcopy",
+    copy = {
+      ["+"] = "pbcopy",
+      ["*"] = "pbcopy",
+    },
+    paste = {
+      ["+"] = "pbpaste",
+      ["*"] = "pbpaste",
+    },
+    cache_enabled = 0,
+  }
+else
+  opt.clipboard = ""
+end
 
 -- window settings
 opt.splitright = true
