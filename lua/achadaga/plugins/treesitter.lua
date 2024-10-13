@@ -9,9 +9,9 @@ return {
     local treesitter = require("nvim-treesitter.configs")
 
     ---@diagnostic disable-next-line: missing-fields
-    treesitter.setup({ -- enable syntax highlighting
+    treesitter.setup({
       highlight = { enable = true },
-      indent = { enable = false },
+      indent = { enable = true },
       autotag = {
         enable = true,
       },
@@ -34,7 +34,7 @@ return {
         "vimdoc",
         "c",
         "cpp",
-        "python"
+        "python",
       },
       incremental_selection = {
         enable = true,

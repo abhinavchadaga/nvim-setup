@@ -3,10 +3,8 @@ vim.g.mapleader = " "
 local keymap = vim.keymap
 
 -- for copy paste
--- vim.keymap.set({'n', 'v'}, '<leader>y', '"+y', { desc = "Copy to system clipboard", noremap = true, silent = true })
--- vim.keymap.set({'n', 'v'}, '<leader>p', '"+p', { desc = "Paste to system clipboard", noremap = true, silent = true })
--- vim.keymap.set({'n', 'v'}, '<leader>yy', '"+yy', { desc = "Copy line to system clipboard", noremap = true, silent = true })
--- vim.keymap.set({'n', 'v'}, '<leader>pp', '"+pp', { desc = "Paste line to system clipboard", noremap = true, silent = true })
+vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to system clipboard", noremap = true, silent = true })
+vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', { desc = "Paste to system clipboard", noremap = true, silent = true })
 
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "clear search highlight" })
 
