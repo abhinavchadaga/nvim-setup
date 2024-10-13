@@ -45,10 +45,10 @@ return {
       keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
 
       opts.desc = "Go to [p]revious [d]iagnostic"
-      keymap.set("n", "pd", vim.diagnostic.goto_prev, opts)
+      keymap.set("n", "<leader>pd", vim.diagnostic.goto_prev, opts)
 
       opts.desc = "Go to [n]ext [d]agnostic"
-      keymap.set("n", "nd", vim.diagnostic.goto_next, opts)
+      keymap.set("n", "<leader>nd", vim.diagnostic.goto_next, opts)
 
       opts.desc = "Add buffer diagnostics to the [q]uickfix list"
       keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
