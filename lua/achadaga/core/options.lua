@@ -33,6 +33,10 @@ opt.signcolumn = "yes"
 opt.backspace = "indent,eol,start"
 
 -- clipboard
+local function is_ssh()
+  return vim.env.SSH_CLIENT ~= nil
+end
+
 local kernel_name = vim.fn.system("uname -s"):lower()
 if string.find(kernel_name, "orbstack") then
   vim.g.clipboard = {
@@ -46,6 +50,18 @@ if string.find(kernel_name, "orbstack") then
       ["*"] = "pbpaste",
     },
     cache_enabled = 0,
+  }
+elseif is_ssh() then
+  g.clipboard = {
+    name = "OSC 52",
+    copy = {
+      ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+      ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+      ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+      ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+    },
   }
 else
   opt.clipboard = ""
