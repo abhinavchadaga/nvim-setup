@@ -120,7 +120,6 @@ return {
             "--completion-style=detailed",
             "--function-arg-placeholders",
             "--fallback-style=llvm",
-            "--query-driver=/opt/homebrew/opt/llvm/bin/clang++",
             "--compile-commands-dir=build",
             "--all-scopes-completion",
             "--pch-storage=memory",
