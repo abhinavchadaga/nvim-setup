@@ -37,7 +37,7 @@ local function is_ssh()
   return vim.env.SSH_CLIENT ~= nil
 end
 
-local kernel_name = vim.fn.system("uname -s"):lower()
+local kernel_name = vim.fn.system("uname -r"):lower()
 if string.find(kernel_name, "orbstack") then
   vim.g.clipboard = {
     name = "pbcopy",
