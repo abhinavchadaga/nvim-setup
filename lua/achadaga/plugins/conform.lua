@@ -19,7 +19,7 @@ return {
         cpp = { "clang-format" },
         bash = { "shfmt" },
         zsh = { "shfmt" },
-        python = { "black" },
+        python = { "isort", "black" },
       },
     })
 

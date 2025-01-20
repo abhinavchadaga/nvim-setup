@@ -7,7 +7,6 @@ return {
     "nvim-tree/nvim-web-devicons",
     "folke/todo-comments.nvim",
     "nvim-telescope/telescope-ui-select.nvim",
-    "nvim-telescope/telescope-file-browser.nvim",
   },
   config = function()
     local telescope = require("telescope")
@@ -36,22 +35,15 @@ return {
         --     },
         --   },
       },
-      extensions = {
-        file_browser = {
-          hijack_netrw = true,
-        },
-      },
     })
 
     telescope.load_extension("fzf")
     telescope.load_extension("ui-select")
-    telescope.load_extension("file_browser")
 
     -- set keymaps
     local keymap = vim.keymap -- for conciseness
     keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Fuzzy find files in cwd" })
     keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Find string in cwd" })
     keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "Find todos" })
-    keymap.set("n", "<space>fb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
   end,
 }
