@@ -220,7 +220,43 @@ require("lazy").setup({
           on_attach = on_attach
         })
       end
+    },
+
+    ------------------------
+    -- VIM-TMUX-NAVIGATOR --
+    ------------------------
+
+    {
+      "christoomey/vim-tmux-navigator",
+      cmd = {
+        "TmuxNavigateLeft",
+        "TmuxNavigateDown",
+        "TmuxNavigateUp",
+        "TmuxNavigateRight",
+        "TmuxNavigatePrevious",
+        "TmuxNavigatorProcessList",
+      },
+      keys = {
+        { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+        { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+        { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+        { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+        { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+      },
+    },
+
+    -------------
+    -- LUALINE --
+    -------------
+
+    {
+      "nvim-lualine/lualine.nvim",
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      opts = {
+        options = { theme = "nightfly" },
+      },
     }
+
   },
   install = { colorscheme = { "habamax" } },
   checker = { enabled = true },
