@@ -245,6 +245,17 @@ require("lazy").setup({
       },
     },
 
+    -------------------
+    -- NVIM-SURROUND --
+    -------------------
+
+    {
+      "kylechui/nvim-surround",
+      version = "*",
+      event = "VeryLazy",
+      opts = {}
+    },
+
     -------------
     -- LUALINE --
     -------------
