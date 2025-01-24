@@ -33,8 +33,8 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 ---------------
 
 -- disable netrw for nvim-tree
--- vim.g.loaded_netrw = 1
---vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 local opt = vim.opt
 local g = vim.g
@@ -190,6 +190,35 @@ require("lazy").setup({
         vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
         vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
         vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+      end
+    },
+
+    ---------------
+    -- NVIM-TREE --
+    ---------------
+
+    {
+      "nvim-tree/nvim-tree.lua",
+      version = "*",
+      lazy = false,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
+      config = function()
+        local function on_attach(bufnr)
+          local api = require("nvim-tree.api")
+          api.config.mappings.default_on_attach(bufnr)
+
+          local keymap = vim.keymap
+          keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })
+          keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "Focus file explorer on current file" })
+          keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
+          keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
+        end
+
+        require("nvim-tree").setup({
+          on_attach = on_attach
+        })
       end
     }
   },
