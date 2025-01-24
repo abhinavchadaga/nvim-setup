@@ -153,7 +153,6 @@ require("lazy").setup({
       build = ":TSUpdate",
       config = function()
         local configs = require("nvim-treesitter.configs")
-
         configs.setup({
           ensure_installed = { "c", "cpp", "python", "javascript", "typescript", "lua", "vim", "markdown", "css", "html", "markdown_inline" },
           sync_install = false,
@@ -161,6 +160,9 @@ require("lazy").setup({
           highlight = { enable = true },
           indent = { enable = true },  
         })
+
+        local ts_install = require('nvim-treesitter.install')
+        ts_install.compilers = { "cc", "c++" }
       end
     },
   },
