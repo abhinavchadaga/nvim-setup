@@ -157,6 +157,7 @@ require("lazy").setup({
 					ensure_installed = {
 						"c",
 						"cpp",
+						"cmake",
 						"python",
 						"javascript",
 						"typescript",
@@ -245,8 +246,42 @@ require("lazy").setup({
 					keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
 				end
 
+				local HEIGHT_RATIO = 0.8
+				local WIDTH_RATIO = 0.5
+
 				require("nvim-tree").setup({
 					on_attach = on_attach,
+					disable_netrw = true,
+					hijack_netrw = true,
+					respect_buf_cwd = true,
+					sync_root_with_cwd = true,
+					view = {
+						relativenumber = true,
+						float = {
+							enable = true,
+							open_win_config = function()
+								local screen_w = vim.opt.columns:get()
+								local screen_h = vim.opt.lines:get() - vim.opt.cmdheight:get()
+								local window_w = screen_w * WIDTH_RATIO
+								local window_h = screen_h * HEIGHT_RATIO
+								local window_w_int = math.floor(window_w)
+								local window_h_int = math.floor(window_h)
+								local center_x = (screen_w - window_w) / 2
+								local center_y = ((vim.opt.lines:get() - window_h) / 2) - vim.opt.cmdheight:get()
+								return {
+									border = "rounded",
+									relative = "editor",
+									row = center_y,
+									col = center_x,
+									width = window_w_int,
+									height = window_h_int,
+								}
+							end,
+						},
+						width = function()
+							return math.floor(vim.opt.columns:get() * WIDTH_RATIO)
+						end,
+					},
 				})
 			end,
 		},
@@ -454,6 +489,8 @@ require("lazy").setup({
 					},
 				})
 
+				lspconfig.cmake.setup({})
+
 				-- PYTHON
 				lspconfig.pyright.setup({
 					on_attach = default_on_attach,
@@ -604,6 +641,56 @@ require("lazy").setup({
 				})
 				local opts = { desc = "[t]oggle [a]uto [s]ave" }
 				vim.api.nvim_set_keymap("n", "<leader>tas", ":ASToggle<CR>", opts)
+			end,
+		},
+
+		----------------
+		-- TOGGLETERM --
+		----------------
+
+		{
+			"akinsho/toggleterm.nvim",
+			version = "*",
+			config = function()
+				require("toggleterm").setup({
+					direction = "horizontal",
+					size = 15,
+					open_mapping = [[<c-\>]],
+					shade_terminals = true,
+				})
+
+				-- Custom terminal keymaps
+				vim.keymap.set(
+					"n",
+					"<leader>th",
+					"<cmd>ToggleTerm size=15 direction=horizontal<cr>",
+					{ desc = "Toggle horizontal terminal" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>tv",
+					"<cmd>ToggleTerm size=60 direction=vertical<cr>",
+					{ desc = "Toggle vertical terminal" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>tf",
+					"<cmd>ToggleTerm direction=float<cr>",
+					{ desc = "Toggle floating terminal" }
+				)
+
+				-- Terminal mode mappings
+				function _G.set_terminal_keymaps()
+					local opts = { buffer = 0 }
+					vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], opts)
+					vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
+					vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
+					vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
+					vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
+				end
+
+				-- Auto-apply terminal keymaps
+				vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
 			end,
 		},
 	},
