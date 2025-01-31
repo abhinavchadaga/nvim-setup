@@ -33,11 +33,15 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 ---------------
 
 -- disable netrw for nvim-tree
+local opt = vim.opt
+local g = vim.g
+
+-- disable netrw
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-local opt = vim.opt
-local g = vim.g
+-- keep an undo file
+vim.opt.undofile = true
 
 -- LH line numbers
 opt.relativenumber = true
@@ -136,12 +140,31 @@ require("lazy").setup({
 		-----------------
 
 		{
-			"bluz71/vim-nightfly-colors",
+			"bluz71/vim-moonfly-colors",
 			lazy = false,
 			priority = 1000,
 			config = function()
-				vim.cmd([[colorscheme nightfly]])
+				vim.cmd([[colorscheme moonfly]])
 			end,
+		},
+
+		---------------
+		-- WHICH-KEY --
+		---------------
+
+		{
+			"folke/which-key.nvim",
+			event = "VeryLazy",
+			opts = {},
+			keys = {
+				{
+					"<leader>?",
+					function()
+						require("which-key").show({ global = false })
+					end,
+					desc = "Buffer Local Keymaps (which-key)",
+				},
+			},
 		},
 
 		----------------
@@ -172,7 +195,7 @@ require("lazy").setup({
 					sync_install = false,
 					auto_install = true,
 					highlight = { enable = true },
-					indent = { enable = true },
+					indent = { enable = false },
 				})
 
 				local ts_install = require("nvim-treesitter.install")
@@ -196,20 +219,48 @@ require("lazy").setup({
 				{ "nvim-telescope/telescope-ui-select.nvim" },
 			},
 			config = function()
-				-- load telescope extensions
+				local actions = require("telescope.actions")
+				local open_with_trouble = require("trouble.sources.telescope").open
+
+				local add_to_trouble = require("trouble.sources.telescope").add
+
 				local telescope = require("telescope")
 				telescope.load_extension("fzf")
 				telescope.load_extension("ui-select")
+				telescope.load_extension("aerial")
 
-				-- keymaps
-				local builtin = require("telescope.builtin")
-				vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
-				vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
-				vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
-				vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+				telescope.setup({
+					defaults = {
+						mappings = {
+							i = { ["<c-t>"] = open_with_trouble },
+							n = { ["<c-t>"] = open_with_trouble },
+						},
+					},
+					extensions = {
+						aerial = {
+							col1_width = 4,
+							col2_width = 30,
+							format_symbol = function(symbol_path, filetype)
+								if filetype == "json" or filetype == "yaml" then
+									return table.concat(symbol_path, ".")
+								else
+									return symbol_path[#symbol_path]
+								end
+							end,
+							show_columns = "both",
+						},
+					},
+				})
 			end,
+			keys = {
+				{ "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Telescope [f]ind [f]iles" },
+				{ "<leader>gf", "<cmd>Telescope git_files<CR>", desc = "Telescope [g]it [f]iles" },
+				{ "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Telescope live [g]rep" },
+				{ "<leader>fb", "<cmd>Telescope buffers<CR>", desc = "Telescope [b]uffers" },
+				{ "<leader>fh", "<cmd>Telescope help_tags<CR>", desc = "Telescope [h]elp tags" },
+				{ "<leader>fa", "<cmd>Telescope aerial<CR>", desc = "Telescope [a]erial" },
+			},
 		},
-
 		-------------------
 		-- DRESSING.NVIM --
 		-------------------
@@ -321,6 +372,9 @@ require("lazy").setup({
 					}, {
 						{ name = "buffer" },
 					}),
+					completion = {
+						autocomplete = { require("cmp.types").cmp.TriggerEvent.TextChanged },
+					},
 				})
 
 				cmp.setup.cmdline({ "/", "?" }, {
@@ -345,6 +399,42 @@ require("lazy").setup({
 			end,
 		},
 
+		-----------------------------
+		-- NVIM CMP SIGNATURE HELP --
+		-----------------------------
+		{
+			"hrsh7th/cmp-nvim-lsp-signature-help",
+			dependencies = { "hrsh7th/nvim-cmp" },
+			config = function()
+				local cmp = require("cmp")
+				cmp.setup({
+					sources = {
+						{ name = "nvim_lsp_signature_help" }, -- Add this source for signature help
+						{ name = "nvim_lsp" },
+					},
+				})
+			end,
+		},
+
+		------------
+		-- AERIAL --
+		------------
+
+		{
+			"stevearc/aerial.nvim",
+			opts = {},
+			dependencies = {
+				"nvim-treesitter/nvim-treesitter",
+				"nvim-tree/nvim-web-devicons",
+			},
+		},
+
+		{
+			"Badhi/nvim-treesitter-cpp-tools",
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+			opts = {},
+		},
+
 		----------------
 		-- LSP Config --
 		----------------
@@ -354,6 +444,17 @@ require("lazy").setup({
 			dependencies = {
 				"p00f/clangd_extensions.nvim",
 				"hrsh7th/cmp-nvim-lsp",
+				-- {
+				-- 	"SmiteshP/nvim-navbuddy",
+				-- 	dependencies = {
+				-- 		"SmiteshP/nvim-navic",
+				-- 		"MunifTanjim/nui.nvim",
+				-- 	},
+				-- 	opts = { lsp = { auto_attach = true } },
+				-- 	keys = {
+				-- 		{ "<leader>nb", "<cmd>Navbuddy<cr>", desc = "[n]av[b]uddy" },
+				-- 	},
+				-- },
 			},
 			config = function()
 				local function default_on_attach(_, bufnr)
@@ -472,9 +573,8 @@ require("lazy").setup({
 						"--clang-tidy",
 						"--header-insertion=iwyu",
 						"--completion-style=detailed",
-						"--function-arg-placeholders",
+						"--function-arg-placeholders=0",
 						"--fallback-style=llvm",
-						"--compile-commands-dir=build",
 						"--all-scopes-completion",
 						"--pch-storage=memory",
 						"--offset-encoding=utf-16",
@@ -505,6 +605,56 @@ require("lazy").setup({
 			end,
 		},
 
+		{
+			"Civitasv/cmake-tools.nvim",
+			dependencies = {
+				{ "stevearc/overseer.nvim" },
+			},
+			opts = {},
+		},
+
+		-------------
+		-- TROUBLE --
+		-------------
+
+		{
+			"folke/trouble.nvim",
+			opts = {}, -- for default options, refer to the configuration section for custom setup.
+			cmd = "Trouble",
+			keys = {
+				{
+					"<leader>xx",
+					"<cmd>Trouble diagnostics toggle<cr>",
+					desc = "Diagnostics (Trouble)",
+				},
+				{
+					"<leader>xX",
+					"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+					desc = "Buffer Diagnostics (Trouble)",
+				},
+				{
+					"<leader>cs",
+					"<cmd>Trouble symbols toggle focus=false<cr>",
+					desc = "Symbols (Trouble)",
+				},
+				{
+					"<leader>cl",
+					"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+					desc = "LSP Definitions / references / ... (Trouble)",
+				},
+				{
+					"<leader>xL",
+					"<cmd>Trouble loclist toggle<cr>",
+					desc = "Location List (Trouble)",
+				},
+				{
+					"<leader>xQ",
+					"<cmd>Trouble qflist toggle<cr>",
+					desc = "Quickfix List (Trouble)",
+				},
+			},
+		},
+
 		-------------
 		-- CONFORM --
 		-------------
@@ -528,6 +678,7 @@ require("lazy").setup({
 						lua = { "stylua" },
 						c = { "clang-format" },
 						cpp = { "clang-format" },
+						cmake = { "cmake-format" },
 						bash = { "shfmt" },
 						zsh = { "shfmt" },
 						python = { "isort", "black" },
@@ -541,6 +692,46 @@ require("lazy").setup({
 						timeout_ms = 1000,
 					})
 				end, { desc = "Format file or range (in visual mode)" })
+			end,
+		},
+
+		---------------
+		-- NVIM-LINT --
+		---------------
+
+		{
+			"mfussenegger/nvim-lint",
+			opts = {},
+			config = function()
+				local lint = require("lint")
+				lint.linters_by_ft = {
+					cpp = { "clangtidy" },
+					python = { "pylint" },
+				}
+
+				vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+					callback = function()
+						lint.try_lint()
+					end,
+				})
+
+				local lint_progress = function()
+					local linters = require("lint").get_running()
+					if #linters == 0 then
+						return "󰦕"
+					end
+
+					-- Notify the user about the running linter(s)
+					vim.notify("Running Linters: " .. table.concat(linters, ", "), vim.log.levels.INFO)
+
+					return "󱉶 " .. table.concat(linters, ", ")
+				end
+
+				vim.api.nvim_create_user_command(
+					"CheckLinters",
+					lint_progress,
+					{ desc = "check linters running on the current file" }
+				)
 			end,
 		},
 
@@ -641,56 +832,6 @@ require("lazy").setup({
 				})
 				local opts = { desc = "[t]oggle [a]uto [s]ave" }
 				vim.api.nvim_set_keymap("n", "<leader>tas", ":ASToggle<CR>", opts)
-			end,
-		},
-
-		----------------
-		-- TOGGLETERM --
-		----------------
-
-		{
-			"akinsho/toggleterm.nvim",
-			version = "*",
-			config = function()
-				require("toggleterm").setup({
-					direction = "horizontal",
-					size = 15,
-					open_mapping = [[<c-\>]],
-					shade_terminals = true,
-				})
-
-				-- Custom terminal keymaps
-				vim.keymap.set(
-					"n",
-					"<leader>th",
-					"<cmd>ToggleTerm size=15 direction=horizontal<cr>",
-					{ desc = "Toggle horizontal terminal" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>tv",
-					"<cmd>ToggleTerm size=60 direction=vertical<cr>",
-					{ desc = "Toggle vertical terminal" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>tf",
-					"<cmd>ToggleTerm direction=float<cr>",
-					{ desc = "Toggle floating terminal" }
-				)
-
-				-- Terminal mode mappings
-				function _G.set_terminal_keymaps()
-					local opts = { buffer = 0 }
-					vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], opts)
-					vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
-					vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
-					vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
-					vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
-				end
-
-				-- Auto-apply terminal keymaps
-				vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
 			end,
 		},
 	},
